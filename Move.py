@@ -14,7 +14,6 @@ class Move:
 		toPrint += "Move: " + str(self.card)
 		toPrint += " from " + self.getPosStr(self.oldPos)
 		toPrint += " to " + self.getPosStr(self.newPos)
-		toPrint += "\n"
 		
 		return toPrint
 
@@ -27,4 +26,3 @@ class Move:
 	def getCard(self):
 		return self.card
 
-	

@@ -2,32 +2,12 @@ from Card import Card
 from random import shuffle
 from Move import Move
 import time
+import copy
 
 #board is a numSuits x numCards list 
 #boardPositions are specified as Col x Row, board position board[row][col] is (col, row)
 
-class PatienceGame:
-	def __init__(self, numCards):
-		self.numCards = numCards
-		self.numSuits = 4
-		self.cards = []
-		self.OOPaces = []
-		self.board = []
-		self.spaces = []
-		self.movesMade = []
-		self.followingCards = {}
-			
-		for row in range(self.numSuits):
-			self.board.append([])
-			self.spaces.append((0, row))
-		
-		self.createCards()
-		self.dealBoard()
-
-		#self.getMoves()
-
-		#self.winGame()
-
+"""
 	def __init__(self, numCards, cardOrder):
 		self.numCards = numCards
 		self.numSuits = 4
@@ -44,6 +24,33 @@ class PatienceGame:
 
 		self.createCards()
 		self.dealBoardInOrder(cardOrder)
+"""
+
+
+class PatienceGame:
+	def __init__(self, numCards):
+		self.numCards = numCards
+		self.numSuits = 4
+		self.cards = []
+		self.OOPaces = []
+		self.initialOOPaces = []
+		self.board = []
+		self.initialBoard = []
+		self.spaces = []
+		self.initialSpaces = []
+		self.movesMade = []
+		self.followingCards = {}
+			
+		for row in range(self.numSuits):
+			self.board.append([])
+			self.spaces.append((0, row))
+		
+		self.createCards()
+		self.dealBoard()
+		self.setupCopy()
+		#self.getMoves()
+
+		#self.winGame()
 
 	def winGame(self):
 		moves = self.getMoves()
@@ -51,17 +58,20 @@ class PatienceGame:
 			moves = self.getMoves()
 			#print("Length of moves is " + str(len(moves)))
 			if (len(moves) == 0):
-				print("GAME OVER")
+				#print("GAME OVER")
 				victory = self.isGameWon()
 				if victory:
 					print("\n GAME WON!! Congratulations.")
 					print("Moves made:")
-					for m in self.movesMade:
-						print(m)
+					#for m in self.movesMade:
+					#	print(m)
+					#print("------- FINAL BOARD ------ \n")
+					#self.printBoard()
 				else:
-					print("\n GAME LOST. Commiserations.")
-				print("------- FINAL BOARD ------ \n")
-				self.printBoard()
+					indentedBlock=1
+					#print("GAME LOST. Commiserations.")
+				#print("------- FINAL BOARD ------ \n")
+				#self.printBoard()
 				return victory
 			#print("Next move is " + str(moves[0]))
 
@@ -71,6 +81,10 @@ class PatienceGame:
 	def isGameWon(self):
 		for row in range(self.numSuits):
 			prevCard = self.board[row][0]
+			if prevCard is None:
+				toPrint = "Failed, as first card was None"
+				print(toPrint)
+				return False
 
 			for col in range(1, self.numCards+1):
 				newCard = self.board[row][col]
@@ -79,7 +93,7 @@ class PatienceGame:
 					toPrint += "Failed, as prevCard: " + str(prevCard)
 					toPrint += " expected " + str(self.getFollowingCard(prevCard))
 					toPrint += " not " + str(newCard)
-					print(toPrint)
+					#print(toPrint)
 					return False
 				prevCard = newCard
 		print("Game completion check complete, no failures")
@@ -107,8 +121,19 @@ class PatienceGame:
 				c = self.cards[row*self.numCards + (col-1)]
 				self.board[row].append(c)
 
-		print("Initial Board:\n")
-		self.printBoard()
+		#print("Initial Board:\n")
+		#self.printBoard()
+
+	def setupCopy(self):
+		self.initialBoard = [x[:] for x in self.board]
+		self.initialOOPaces = self.OOPaces[:]
+		self.initialSpaces = self.spaces[:]
+
+	def resetBoard(self):
+		self.board = [x[:] for x in self.initialBoard]
+		self.OOPaces = self.initialOOPaces[:]
+		self.movesMade = []
+		self.spaces = self.initialSpaces[:]
 
 		"""
 #put the right cards in
@@ -128,12 +153,12 @@ class PatienceGame:
 				if cards[row*(self.numCards+1) + col] == "..":
 					self.board[row][col] = None
 				else:
-					print("Value here is " + cards[row*(self.numCards+1) + col])
+					#print("Value here is " + cards[row*(self.numCards+1) + col])
 					ci = self.getCardsIndex(cards[row*(self.numCards+1)+col])
 					c = self.cards[ci]
 					self.board[row][col] = c
-		print("Initial board: ")
-		self.printBoard()
+		#print("Initial board: ")
+		#self.printBoard()
 
 	def getCardsIndex(self, s):
 		suitIndex = -1 #hearts=0, clubs=1, dia=2, spade=3
@@ -163,7 +188,7 @@ class PatienceGame:
 
 		retIndex = suitIndex*self.numCards + cardIndex
 
-		print("for card " + str(s) + " the index is " + str(retIndex))
+		#print("for card " + str(s) + " the index is " + str(retIndex))
 
 		return retIndex
 
@@ -173,6 +198,18 @@ class PatienceGame:
 		for row in range(self.numSuits):
 			for col in range(self.numCards+1):
 				c = self.board[row][col]
+				if c is None:
+					toPrint += "..." + "\t"
+				else:
+					toPrint += str(c) + "\t"
+			toPrint += "\n"
+		print(toPrint)
+
+	def printInitialBoard(self):
+		toPrint = ""
+		for row in range(self.numSuits):
+			for col in range(self.numCards+1):
+				c = self.initialBoard[row][col]
 				if c is None:
 					toPrint += "..." + "\t"
 				else:
