@@ -25,13 +25,13 @@ class PatienceGame:
 
 		#self.getMoves()
 
-		self.winGame()
+		#self.winGame()
 
 	def winGame(self):
 		moves = self.getMoves()
 		while len(moves) != 0:
 			moves = self.getMoves()
-			print("Length of moves is " + str(len(moves)) + "\n")
+			#print("Length of moves is " + str(len(moves)))
 			if (len(moves) == 0):
 				print("GAME OVER")
 				victory = self.isGameWon()
@@ -41,7 +41,7 @@ class PatienceGame:
 					print("\n GAME LOST. Commiserations.")
 				self.printBoard()
 				return victory
-			print("Next move is " + str(moves[0]) + "\n")
+			#print("Next move is " + str(moves[0]))
 
 			#time.sleep(5)
 			self.makeMove(moves[0])
@@ -59,7 +59,9 @@ class PatienceGame:
 					toPrint += " not " + str(newCard)
 					print(toPrint)
 					return False
+				prevCard = newCard
 		print("Game completion check complete, no failures")
+		return True	
 
 	def createCards(self):
 		for s in range(self.numSuits):
@@ -120,10 +122,10 @@ class PatienceGame:
 
 	def getFollowingCard(self, prevCard):
 		if prevCard.getNumber() == (self.numCards-1):
-			print(str(prevCard) + " has no following card.\n")
+			#print(str(prevCard) + " has no following card.\n")
 			return None
 		folCard = self.followingCards[prevCard]
-		print("folCard of " + str(prevCard) + " is " + str(folCard))
+		#print("folCard of " + str(prevCard) + " is " + str(folCard))
 		return folCard
 
 	def findCard(self, card):
@@ -149,9 +151,9 @@ class PatienceGame:
 
 		if c in self.OOPaces:
 			self.OOPaces.remove(c)
-			print("Removed one OOP ace")
+			#print("Removed one OOP ace")
 
 		self.spaces.remove(np)
 		self.spaces.append(op)
-		self.printBoard()
+		#self.printBoard()
 
