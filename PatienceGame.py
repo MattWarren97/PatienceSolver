@@ -7,13 +7,14 @@ import time
 #boardPositions are specified as Col x Row, board position board[row][col] is (col, row)
 
 class PatienceGame:
-	def __init__(self):
-		self.numCards = 7
+	def __init__(self, numCards):
+		self.numCards = numCards
 		self.numSuits = 4
 		self.cards = []
 		self.OOPaces = []
 		self.board = []
 		self.spaces = []
+		self.movesMade = []
 		self.followingCards = {}
 			
 		for row in range(self.numSuits):
@@ -27,6 +28,23 @@ class PatienceGame:
 
 		#self.winGame()
 
+	def __init__(self, numCards, cardOrder):
+		self.numCards = numCards
+		self.numSuits = 4
+		self.cards = []
+		self.OOPaces = []
+		self.board = []
+		self.spaces = []
+		self.movesMade = []
+		self.followingCards = {}
+
+		for row in range(self.numSuits):
+			self.board.append([])
+			self.spaces.append((0, row))
+
+		self.createCards()
+		self.dealBoardInOrder(cardOrder)
+
 	def winGame(self):
 		moves = self.getMoves()
 		while len(moves) != 0:
@@ -37,8 +55,12 @@ class PatienceGame:
 				victory = self.isGameWon()
 				if victory:
 					print("\n GAME WON!! Congratulations.")
+					print("Moves made:")
+					for m in self.movesMade:
+						print(m)
 				else:
 					print("\n GAME LOST. Commiserations.")
+				print("------- FINAL BOARD ------ \n")
 				self.printBoard()
 				return victory
 			#print("Next move is " + str(moves[0]))
@@ -87,6 +109,63 @@ class PatienceGame:
 
 		print("Initial Board:\n")
 		self.printBoard()
+
+		"""
+#put the right cards in
+		for cardIndex in range(len(cards)):
+			column = cardIndex % (self.numCards+1)
+			row = math.floor(cardIndex/(self.numCards+1))
+			"""
+
+	def dealBoardInOrder(self, cards):
+		#make board right size:
+		for row in range(self.numSuits):
+			for col in range(0, self.numCards+1):
+				self.board[row].append(None)
+		#put the right cards in
+		for row in range(self.numSuits):
+			for col in range(0, self.numCards+1):
+				if cards[row*(self.numCards+1) + col] == "..":
+					self.board[row][col] = None
+				else:
+					print("Value here is " + cards[row*(self.numCards+1) + col])
+					ci = self.getCardsIndex(cards[row*(self.numCards+1)+col])
+					c = self.cards[ci]
+					self.board[row][col] = c
+		print("Initial board: ")
+		self.printBoard()
+
+	def getCardsIndex(self, s):
+		suitIndex = -1 #hearts=0, clubs=1, dia=2, spade=3
+
+		if s[0] == "h":
+			suitIndex = 0
+		elif s[0] == "c":
+			suitIndex = 1
+		elif s[0] == "d":
+			suitIndex = 2
+		elif s[0] == "s":
+			suitIndex = 3
+		else:
+			print("ERROR, unrecognised suit in " + s)
+
+		cardIndex = -1
+		if s[1] == "A":
+			cardIndex = 0
+		elif s[1] == "J":
+			cardIndex = 10
+		elif s[1] == "Q":
+			cardIndex = 11
+		elif s[1] == "K":
+			cardIndex = 12
+		else:
+			cardIndex = int(s[1])-1
+
+		retIndex = suitIndex*self.numCards + cardIndex
+
+		print("for card " + str(s) + " the index is " + str(retIndex))
+
+		return retIndex
 
 
 	def printBoard(self):
@@ -141,6 +220,7 @@ class PatienceGame:
 
 
 	def makeMove(self, move):
+		self.movesMade.append(move)
 		op = move.getOldPos()
 		np = move.getNewPos()
 		c = move.getCard()
